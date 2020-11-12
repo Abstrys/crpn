@@ -9,8 +9,11 @@ This version is written in Python and should run just about anywhere.
 
 ## How to use it
 
-For now, just run the `crpn.py` file or throw it in your `$HOME/bin` directory and alias it or
-rename it to `crpn`.
+Install from source:
+
+    cd crpn
+    python -m pep517.build .
+    pip install dist/crpn-0.0.1.tar.gz
 
 
 ## License
