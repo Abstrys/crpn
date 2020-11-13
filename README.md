@@ -73,11 +73,77 @@ Running it:
          0:   100
         ------------------------
 
-1. You can also press **Enter** without entering a value to repeat the first value on the stack,
-   type `del` to delete stack entries, `clear` to clear the stack, `swap` to swap the first two
-   entries on the stack, and many more operations.
+1. Type `quit` or `exit` to save the stack and quit.
 
-1. You can type `help` to get help, or type `quit` or `exit` when you're ready to quit.
+
+## Other things to try
+
+* Type `help commands` or `help operations` for a list of all current operations.
+
+* Type `help` or `help <op_name>` to get general help or help for a specific operation at any time.
+
+* Press **Enter** without entering a value to duplicate the final row on the stack.
+
+* Type `del` or `del <n>` to delete stack row(s), or `clear` to clear the stack
+
+* You can combine operations with `&&`. For example, to clear the stack and then quit, type:
+
+        > clear && quit
+
+
+## List of operations
+
+(generated using `help operations`)
+
+* 'abs' - Compute the absolute value of row 0.
+* 'acos' - Compute the arccosine of row 0.
+* 'add' - Add rows 0 and 1 together.
+* 'asin' - Compute the arcsine of row 0.
+* 'atan' - Compute the arctangent of row 0.
+* 'cbrt' - cbrt
+* 'ceil' - ceil
+* 'clear' - Clear the stack.
+* 'cos' - Compute the cosine of row 0.
+* 'cosh' - Compute the hyperbolic cosine of row 0.
+* 'deg' - deg
+* 'del' - Delete row 0, or the row specified by the optional argument.
+* 'div' - Divide row 1 by row 0.
+* 'dup' - Duplicate row 0 and add it to the stack.
+* 'e' - e
+* 'en1' - en1
+* 'eng' - eng
+* 'exp' - exp
+* 'expn1' - expn1
+* 'fact' - Compute the factorial of row 0.
+* 'fix' - fix
+* 'floor' - floor
+* 'help' - Print general help, or for a given operation.
+* 'hyp' - hyp
+* 'inv' - inv
+* 'ln' - ln
+* 'log' - log
+* 'max' - max
+* 'min' - min
+* 'mult' - Multiply rows 0 and 1.
+* 'neg' - neg
+* 'pow' - pow
+* 'quit' - Save the current state and quit.
+* 'rad' - rad
+* 'rand' - Add a random fractional value to the stack.
+* 'root' - root
+* 'rot' - rot
+* 'sci' - sci
+* 'sin' - Compute the sine of row 0.
+* 'sinh' - Compute the hyperbolic sine of row 0.
+* 'sqrt' - Compute the square root of row 0.
+* 'std' - std
+* 'subt' - Subtract row 0 from row 1.
+* 'sum' - Sum all rows, or a given number of them, together.
+* 'swap' - Swap rows 0 and 1, or row 0 with the one provided in the optional parameter.
+* 'tan' - Compute the tangent of row 0.
+* 'tanh' - Compute the hyperbolic tangent of row 0.
+
+To get built-in help for any of these operations, type `help <op_name>`.
 
 
 ## License
