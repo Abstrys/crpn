@@ -6,9 +6,12 @@
 # This code is provided under the terms of the MIT open source license. See the LICENSE file
 # included with this repository for # details.
 
-import sys
+import sys, os
 import math, random
 import json
+from pathlib import Path
+
+SAVEFILE = '.crpn-state.json'
 
 ID_TEXT = """
 ===================================================
@@ -39,9 +42,9 @@ OP_METHOD_MAP = {
     "^": "pow",
     "abs": "abs",
     "acos": "acos",
+    "add": "add",
     "asin": "asin",
     "atan": "atan",
-    "help": "help",
     "cbrt": "cbrt",
     "ceil": "ceil",
     "clear": "clear",
@@ -49,36 +52,238 @@ OP_METHOD_MAP = {
     "cosh": "cosh",
     "deg": "deg",
     "del": "delete",
+    "div": "div",
     "dup": "dup",
     "e": "e",
     "en1": "en1",
     "eng": "eng",
+    "exit": "quit",
     "exp": "exp",
     "expn1": "expn1",
     "fact": "fact",
     "fix": "fix",
     "floor": "floor",
+    "help": "help",
     "hyp": "hyp",
     "inv": "inv",
     "ln": "ln",
     "log": "log",
     "max": "max",
     "min": "min",
+    "mult": "mult",
     "neg": "neg",
     "pow": "pow",
+    "quit": "quit",
     "rad": "rad",
     "rand": "rand",
     "root": "root",
     "rot": "rot",
     "sci": "sci",
     "sin": "sin",
-    "sum": "sum",
     "sinh": "sinh",
     "sqrt": "sqrt",
     "std": "std",
+    "subt": "subt",
+    "sum": "sum",
     "swap": "swap",
     "tan": "tan",
     "tanh": "tanh",
+}
+
+OP_HELP = {
+    "abs": {
+        "desc": "Compute the absolute value of row 0.",
+        "min_stack": 1
+    },
+    "acos": {
+        "desc":  "Compute the arccosine of row 0.",
+        "min_stack": 1
+    },
+    "add": {
+        "desc": "Add rows 0 and 1 together.",
+        "min_stack": 1
+    },
+    "asin": {
+        "desc":  "Compute the arcsine of row 0.",
+        "min_stack": 1
+    },
+    "atan": {
+        "desc":  "Compute the arctangent of row 0.",
+        "min_stack": 1
+    },
+    "cbrt": {
+        "desc":  "cbrt",
+        "min_stack": 1
+    },
+    "ceil": {
+        "desc":  "ceil",
+        "min_stack": 1
+    },
+    "clear": {
+        "desc":  "Clear the stack.",
+        "min_stack": 0
+    },
+    "cos": {
+        "desc":  "Compute the cosine of row 0.",
+        "min_stack": 1
+    },
+    "cosh": {
+        "desc":  "Compute the hyperbolic cosine of row 0.",
+        "min_stack": 1
+    },
+    "deg": {
+        "desc":  "deg",
+        "min_stack": 1
+    },
+    "del": {
+        "desc":  "Delete row 0, or the row specified by the optional argument.",
+        "min_stack": 1,
+        "opt_args": "1: the stack row to delete."
+    },
+    "div": {
+        "desc":  "Divide row 1 by row 0.",
+        "min_stack": 2
+    },
+    "dup": {
+        "desc":  "Duplicate row 0 and add it to the stack.",
+        "min_stack": 1
+    },
+    "e":  {
+        "desc": "e",
+        "min_stack": 1
+    },
+    "en1":  {
+        "desc": "en1",
+        "min_stack": 1
+    },
+    "eng":  {
+        "desc": "eng",
+        "min_stack": 1
+    },
+    "exp": {
+        "desc": "exp",
+        "min_stack": 1
+    },
+    "expn1": {
+        "desc": "expn1",
+        "min_stack": 1
+    },
+    "fact": {
+        "desc": "Compute the factorial of row 0.",
+        "min_stack": 1,
+        "req_type": "integer"
+    },
+    "fix": {
+        "desc": "fix",
+        "min_stack": 1
+    },
+    "floor": {
+        "desc": "floor",
+        "min_stack": 1
+    },
+    "help": {
+        "desc": "Print general help, or for a given operation.",
+        "min_stack": 0,
+        "opt_args": "1: the operation to get help for."
+    },
+    "hyp": {
+        "desc": "hyp",
+        "min_stack": 1
+    },
+    "inv": {
+        "desc": "inv",
+        "min_stack": 1
+    },
+    "ln": {
+        "desc": "ln",
+        "min_stack": 1
+    },
+    "log": {
+        "desc": "log",
+        "min_stack": 1
+    },
+    "max": {
+        "desc": "max",
+        "min_stack": 1
+    },
+    "min": {
+        "desc": "min",
+        "min_stack": 1
+    },
+    "mult": {
+        "desc": "Multiply rows 0 and 1.",
+        "min_stack": 2
+    },
+    "neg": {
+        "desc": "neg",
+        "min_stack": 1
+    },
+    "pow": {
+        "desc": "pow",
+        "min_stack": 1
+    },
+    "quit": {
+        "desc": "Save the current state and quit.",
+        "min_stack": 1
+    },
+    "rad": {
+        "desc": "rad",
+        "min_stack": 1
+    },
+    "rand": {
+        "desc": "Add a random fractional value to the stack.",
+        "min_stack": 1
+    },
+    "root": {
+        "desc": "root",
+        "min_stack": 1
+    },
+    "rot": {
+        "desc": "rot",
+        "min_stack": 1
+    },
+    "sci": {
+        "desc": "sci",
+        "min_stack": 1
+    },
+    "sin": {
+        "desc": "Compute the sine of row 0.",
+        "min_stack": 1
+    },
+    "sinh": {
+        "desc": "Compute the hyperbolic sine of row 0.",
+        "min_stack": 1
+    },
+    "sqrt": {
+        "desc": "Compute the square root of row 0.",
+        "min_stack": 1
+    },
+    "std": {
+        "desc": "std",
+        "min_stack": 1
+    },
+    "subt": {
+        "desc": "Subtract row 0 from row 1.",
+        "min_stack": 2
+    },
+    "sum": {
+        "desc": "Sum all rows, or a given number of them, together.",
+        "min_stack": 1,
+        "opt_args": "1: the number of rows to sum."
+    },
+    "swap": {
+        "desc": "Swap rows 0 and 1, or row 0 with the one provided in the optional parameter.",
+        "min_stack": 1,
+        "opt_args": "1: the row to swap with row 0."
+    },
+    "tan": {
+        "desc": "Compute the tangent of row 0.",
+        "min_stack": 1
+    },
+    "tanh": {
+        "desc": "Compute the hyperbolic tangent of row 0.",
+        "min_stack": 1
+    }
 }
 
 DISPLAY_MODES = ("STD", "FIX", "SCI", "ENG") 
@@ -92,34 +297,45 @@ class CRPN:
         self.stack = []
         self.num_format = 'std'
 
+
     def process_input(self, user_input):
+        # is more than one command being joined with '&&'?
+        if '&&' in user_input:
+            for x in user_input.split('&&'):
+                self.process_input(x.strip())
+            return
+
         # split any args from the input.
         cmd = args = None
         if ' ' in user_input:
-            (cmd, args) = user_input.split(' ', 1)
+            cmd_parts = user_input.split(' ')
+            cmd = cmd_parts[0]
+            if len(cmd_parts) > 1:
+                args = cmd_parts[1:]
         else:
             cmd = user_input
             args = None
+
         if cmd in OP_METHOD_MAP:
             method = getattr(self, 'op_' + OP_METHOD_MAP[cmd])
             method(args)
             return
-        elif user_input in CONST_MAP:
-            self.stack.append(CONST_MAP[user_input])
+        elif cmd in CONST_MAP:
+            self.stack.append(CONST_MAP[cmd])
             return
-        else:
-            # is it an int or float?
+        else: # a value, perchance?
             value = None
             try:
-                value = int(user_input)
+                value = int(cmd)
                 self.stack.append(value)
                 return
             except ValueError:
                 pass
 
-            value = float(user_input)
+            value = float(cmd)
             self.stack.append(value)
             return
+
 
     def require_stack(self, n):
         cur_stack_size = len(self.stack)
@@ -139,12 +355,33 @@ class CRPN:
             err_str += " on the stack!"
             raise ValueError(err_str)
 
+
     def get_stack(self):
         return self.stack
 
-    def print_stack(self):
-        pass
 
+    def load_state(self):
+        save_path = os.path.join(str(Path.home()), SAVEFILE)
+        if os.path.exists(save_path):
+            json_str = None
+            with open(save_path, 'r') as savefile:
+                json_str = savefile.read()
+            save_data = json.loads(json_str)
+            self.stack = save_data['stack']
+            self.num_format = save_data['num_format']
+            return True
+        return False
+
+
+    def save_state(self):
+        save_data = {
+            'stack': self.stack,
+            'num_format': self.num_format
+            }
+        json_str = json.dumps(save_data)
+        save_path = os.path.join(str(Path.home()), SAVEFILE)
+        with open(save_path, 'w+') as savefile:
+            savefile.write(json_str)
 
     #
     # Operations
@@ -168,10 +405,12 @@ class CRPN:
         val1 = self.stack.pop()
         self.stack.append(math.asin(val1))
 
+
     def op_atan(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
         self.stack.append(math.atan(val1))
+
 
     def op_add(self, args):
         self.require_stack(2)
@@ -179,18 +418,23 @@ class CRPN:
         val2 = self.stack.pop()
         self.stack.append(val1 + val2)
 
+
     def op_clear(self, args):
         self.stack = []
+        print('Stack cleared.')
+
 
     def op_cos(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
         self.stack.append(math.cos(val1))
 
+
     def op_cosh(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
         self.stack.append(math.cosh(val1))
+
 
     def op_div(self, args):
         self.require_stack(2)
@@ -198,18 +442,28 @@ class CRPN:
         val2 = self.stack.pop()
         self.stack.append(val1 / val2)
 
+
     def op_deg(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
         self.stack.append(math.degrees(val1))
 
+
     def op_delete(self, args):
-        self.require_stack(1)
-        self.stack.pop()
+        stack_level = 0
+        if args != None:
+            stack_level = int(args[0])
+        self.require_stack(stack_level+1)
+        if stack_level == None:
+            self.stack.pop()
+        else:
+            self.stack.pop(-stack_level-1)
+
 
     def op_dup(self, args):
         self.require_stack(1)
         self.stack.append(self.stack[-1])
+
 
     def op_fact(self, args):
         self.require_stack(1)
@@ -218,8 +472,38 @@ class CRPN:
         val1 = self.stack.pop()
         self.stack.append(math.factorial(val1))
 
+
     def op_help(self, args):
-        print(HELP_TEXT)
+        """
+        Print general help or help for a specific command.
+        """
+        if args == None:
+            print(HELP_TEXT)
+        else:
+            op = args[0]
+            if op in OP_METHOD_MAP:
+                op_method = OP_METHOD_MAP[op]
+                op_synonyms = find_op_synonyms(op)
+                if op_method in OP_HELP:
+                    op_help = OP_HELP[op_method]
+                    print("\n| " + op_help['desc'])
+                    print("| Required stack size: " + str(op_help['min_stack']))
+                    if len(op_synonyms) > 1:
+                        print("| Synonyms: " + str(op_synonyms))
+                    if 'opt_args' in op_help:
+                        print("| Optional parameters: " + str(op_help['opt_args']))
+                    print("")
+                else:
+                    print("Operation '%s' has no help!" % op_method)
+            elif (op == "commands") or (op == "operations"):
+                # list the available operations
+                print("\nAvailable operations:")
+                for op in OP_HELP:
+                    print("* '%s' - %s" % (op, OP_HELP[op]['desc']))
+                print("\nFor help about a specific operation, type 'help <op_name>'.\n")
+            else:
+                print("No operation named '%s'" % op)
+
 
     def op_max(self, args):
         self.require_stack(2)
@@ -252,6 +536,11 @@ class CRPN:
             self.stack.append(val2 ** val1)
         else:
             self.stack.append(math.pow(val2, val1))
+
+    def op_quit(self, args):
+        self.save_state()
+        print("State saved. See you later!")
+        sys.exit(0)
 
     def op_rad(self, args):
         self.require_stack(1)
@@ -294,10 +583,19 @@ class CRPN:
 
 
     def op_swap(self, args):
-        self.require_stack(2)
-        val1 = self.stack.pop()
-        val2 = self.stack.pop()
-        self.stack += [val1, val2]
+        """
+        Swap the two bottom values on the stack, or optionally, the bottom value with the stack
+        level passed in as an argument.
+        """
+        stack_level = 1
+        if args != None:
+            stack_level = int(args[0])
+        self.require_stack(stack_level+1)
+        val2 = self.stack[-stack_level-1]
+        val1 = self.stack[-1]
+        self.stack[-stack_level-1] = val1
+        self.stack[-1] = val2
+
 
     def op_sqrt(self, args):
         self.require_stack(1)
@@ -319,6 +617,10 @@ def main():
     app = CRPN()
     
     print(ID_TEXT + HELP_TEXT)
+
+    if app.load_state():
+        sys.stdout.write("Restored previously saved state. ")
+
     print("Current stack:")
     while(True):
         # print the current stack
@@ -331,11 +633,17 @@ def main():
         print("-" * 24)
         sys.stdout.write('> ')
         user_input = input()
-        if user_input in ['quit', 'exit']:
-            sys.exit(0)
-        else:
-            try:
-                app.process_input(user_input)
-            except ValueError as e:
-                print(e)
+        try:
+            app.process_input(user_input)
+        except ValueError as e:
+            print(e)
+
+
+def find_op_synonyms(op):
+    synonyms = []
+    op_method = OP_METHOD_MAP[op]
+    for op_name in OP_METHOD_MAP:
+        if OP_METHOD_MAP[op_name] == op_method:
+            synonyms.append(op_name)
+    return synonyms
 
