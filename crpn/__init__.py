@@ -546,12 +546,31 @@ class CRPN:
         sys.exit(0)
 
     def op_rad(self, args):
+        """
+        Put a random fractional value (0-1) on the stack.
+        """
         self.require_stack(1)
         val1 = self.stack.pop()
         self.stack.append(math.radians(val1))
 
+
     def op_rand(self, args):
         self.stack.append(random.random())
+
+
+    def op_rot(self, args):
+        """
+        Rotate items on the stack. By default, will rotate the top 3 items.
+        """
+        stack_level = 3
+        if args != None:
+            stack_level = int(args[0])
+        if stack_level < 3:
+            raise ValueError("ERROR: You can't rotate fewer than 3 items!")
+        self.require_stack(stack_level)
+        val = self.stack.pop(-stack_level)
+        self.stack.append(val)
+
 
     def op_sin(self, args):
         self.require_stack(1)
