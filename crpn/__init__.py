@@ -112,11 +112,11 @@ OP_HELP = {
         "min_stack": 1
     },
     "cbrt": {
-        "desc":  "cbrt",
+        "desc":  "Compute the cube root of row 0.",
         "min_stack": 1
     },
     "ceil": {
-        "desc":  "ceil",
+        "desc":  "Compute the ceiling (next higher whole number) for row 0.",
         "min_stack": 1
     },
     "clear": {
@@ -132,7 +132,7 @@ OP_HELP = {
         "min_stack": 1
     },
     "deg": {
-        "desc":  "deg",
+        "desc":  "Converts the radian value on row 0 to degrees",
         "min_stack": 1
     },
     "del": {
@@ -149,23 +149,23 @@ OP_HELP = {
         "min_stack": 1
     },
     "e":  {
-        "desc": "e",
+        "desc": "Raise the constant 'e' to the power of the value on row 0.",
         "min_stack": 1
     },
     "en1":  {
-        "desc": "en1",
+        "desc": "Raise the constant 'e' to the power of 1/value on row 0.",
         "min_stack": 1
     },
     "eng":  {
-        "desc": "eng",
-        "min_stack": 1
+        "desc": "Display results in engineering notation.",
+        "min_stack": 0
     },
     "exp": {
-        "desc": "exp",
+        "desc": "Raise 10 to the power of the value on row 0.",
         "min_stack": 1
     },
     "expn1": {
-        "desc": "expn1",
+        "desc": "Raise 10 to the power of 1/value on row 0.",
         "min_stack": 1
     },
     "fact": {
@@ -174,11 +174,11 @@ OP_HELP = {
         "req_type": "integer"
     },
     "fix": {
-        "desc": "fix",
-        "min_stack": 1
+        "desc": "Display results in fixed-point notation.",
+        "min_stack": 0
     },
     "floor": {
-        "desc": "floor",
+        "desc": "Compute the floor (next lower whole number) for row 0.",
         "min_stack": 1
     },
     "help": {
@@ -187,39 +187,41 @@ OP_HELP = {
         "opt_args": "1: the operation to get help for."
     },
     "hyp": {
-        "desc": "hyp",
+        "desc": "Computes the hypoteneuse (sqrt(x2 + y2)) of rows 0 and 1.",
         "min_stack": 1
     },
     "inv": {
-        "desc": "inv",
+        "desc": "Computes the inverse (1/x) of row 0.",
         "min_stack": 1
     },
     "ln": {
-        "desc": "ln",
+        "desc": "Computes the natural (e-based) log of row 0.",
         "min_stack": 1
     },
     "log": {
-        "desc": "log",
+        "desc": "Computes the 10-based log of row 0.",
         "min_stack": 1
     },
     "max": {
-        "desc": "max",
-        "min_stack": 1
+        "desc": "Computes the max between row 0 and 1, or between the number of rows specified in the optional argument.",
+        "min_stack": 2,
+        "opt_args": "1: The number of rows to compute the max value of"
     },
     "min": {
-        "desc": "min",
-        "min_stack": 1
+        "desc": "Computes the min between row 0 and 1, or between the number of rows specified in the optional argument.",
+        "min_stack": 2,
+        "opt_args": "1: The number of rows to compute the min value of"
     },
     "mult": {
         "desc": "Multiply rows 0 and 1.",
         "min_stack": 2
     },
     "neg": {
-        "desc": "neg",
+        "desc": "Negate row 0.",
         "min_stack": 1
     },
     "pow": {
-        "desc": "pow",
+        "desc": "Raise row 1 to the power of row 2.",
         "min_stack": 1
     },
     "quit": {
@@ -227,7 +229,7 @@ OP_HELP = {
         "min_stack": 1
     },
     "rad": {
-        "desc": "rad",
+        "desc": "Convert the value of row 0 (in degrees) to radians.",
         "min_stack": 1
     },
     "rand": {
@@ -235,16 +237,17 @@ OP_HELP = {
         "min_stack": 1
     },
     "root": {
-        "desc": "root",
+        "desc": "Computes the x root of y for rows 0 and 1.",
         "min_stack": 1
     },
     "rot": {
-        "desc": "rot",
-        "min_stack": 1
+        "desc": "Rotates rows 0-2, or the number of rows specified in the optional argument.",
+        "min_stack": 3,
+        "opt_args": "1: The number of rows to rotate"
     },
     "sci": {
-        "desc": "sci",
-        "min_stack": 1
+        "desc": "Display results in scientific notation.",
+        "min_stack": 0
     },
     "sin": {
         "desc": "Compute the sine of row 0.",
@@ -259,8 +262,8 @@ OP_HELP = {
         "min_stack": 1
     },
     "std": {
-        "desc": "std",
-        "min_stack": 1
+        "desc": "Display results in standard notation.",
+        "min_stack": 0
     },
     "subt": {
         "desc": "Subtract row 0 from row 1.",

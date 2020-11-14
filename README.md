@@ -100,43 +100,43 @@ Running it:
 * 'add' - Add rows 0 and 1 together.
 * 'asin' - Compute the arcsine of row 0.
 * 'atan' - Compute the arctangent of row 0.
-* 'cbrt' - cbrt
-* 'ceil' - ceil
+* 'cbrt' - Compute the cube root of row 0.
+* 'ceil' - Compute the ceiling (next higher whole number) for row 0.
 * 'clear' - Clear the stack.
 * 'cos' - Compute the cosine of row 0.
 * 'cosh' - Compute the hyperbolic cosine of row 0.
-* 'deg' - deg
+* 'deg' - Converts the radian value on row 0 to degrees
 * 'del' - Delete row 0, or the row specified by the optional argument.
 * 'div' - Divide row 1 by row 0.
 * 'dup' - Duplicate row 0 and add it to the stack.
-* 'e' - e
-* 'en1' - en1
-* 'eng' - eng
-* 'exp' - exp
-* 'expn1' - expn1
+* 'e' - Raise the constant 'e' to the power of the value on row 0.
+* 'en1' - Raise the constant 'e' to the power of 1/value on row 0.
+* 'eng' - Display results in engineering notation.
+* 'exp' - Raise 10 to the power of the value on row 0.
+* 'expn1' - Raise 10 to the power of 1/value on row 0.
 * 'fact' - Compute the factorial of row 0.
-* 'fix' - fix
-* 'floor' - floor
+* 'fix' - Display results in fixed-point notation.
+* 'floor' - Compute the floor (next lower whole number) for row 0.
 * 'help' - Print general help, or for a given operation.
-* 'hyp' - hyp
-* 'inv' - inv
-* 'ln' - ln
-* 'log' - log
-* 'max' - max
-* 'min' - min
+* 'hyp' - Computes the hypoteneuse (sqrt(x2 + y2)) of rows 0 and 1.
+* 'inv' - Computes the inverse (1/x) of row 0.
+* 'ln' - Computes the natural (e-based) log of row 0.
+* 'log' - Computes the 10-based log of row 0.
+* 'max' - Computes the max between row 0 and 1, or between the number of rows specified in the optional argument.
+* 'min' - Computes the min between row 0 and 1, or between the number of rows specified in the optional argument.
 * 'mult' - Multiply rows 0 and 1.
-* 'neg' - neg
-* 'pow' - pow
+* 'neg' - Negate row 0.
+* 'pow' - Raise row 1 to the power of row 2.
 * 'quit' - Save the current state and quit.
-* 'rad' - rad
+* 'rad' - Convert the value of row 0 (in degrees) to radians.
 * 'rand' - Add a random fractional value to the stack.
-* 'root' - root
-* 'rot' - rot
-* 'sci' - sci
+* 'root' - Computes the x root of y for rows 0 and 1.
+* 'rot' - Rotates rows 0-2, or the number of rows specified in the optional argument.
+* 'sci' - Display results in scientific notation.
 * 'sin' - Compute the sine of row 0.
 * 'sinh' - Compute the hyperbolic sine of row 0.
 * 'sqrt' - Compute the square root of row 0.
-* 'std' - std
+* 'std' - Display results in standard notation.
 * 'subt' - Subtract row 0 from row 1.
 * 'sum' - Sum all rows, or a given number of them, together.
 * 'swap' - Swap rows 0 and 1, or row 0 with the one provided in the optional parameter.
