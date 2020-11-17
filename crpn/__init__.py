@@ -25,6 +25,16 @@ Enter values on the stack, or the name of an operation or command.
 Type 'quit' or 'exit' to quit.  Type 'help' for help.
 """
 
+EXTRA_HELP = """
+Also try:
+
+    help <operation_name>
+
+for operation-specific help. For a list of the available operations, type:
+
+    help operations
+"""
+
 CONST_MAP = {
     "E": math.e,
     "PI": math.pi,
@@ -481,7 +491,7 @@ class CRPN:
         Print general help or help for a specific command.
         """
         if args == None:
-            print(HELP_TEXT)
+            print(HELP_TEXT + EXTRA_HELP)
         else:
             op = args[0]
             if op in OP_METHOD_MAP:
