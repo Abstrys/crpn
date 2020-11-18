@@ -12,7 +12,11 @@ in a pure terminal environment, and of course, will use the colors and fonts you
 terminal.
 
 
-## How to use it
+## Installing it
+
+Install from pypi:
+
+    pip install crpn
 
 Install from source:
 
@@ -35,13 +39,14 @@ Install from source:
         python -m pep517.build .
         pip install dist/crpn-0.0.1.tar.gz
 
-Running it:
 
-1. Run it by running **`crpn`**. It will provide a few instructions and show you the stack, which
-   will initially be empty:
+## Using it
+
+1. Run it by typing **`crpn`** at the command-prompt. It will provide a few instructions and show
+   you the stack, which will initially be empty:
 
         ===================================================
-        crpn v.0.0.1 - a minimalist command-line calculator
+        crpn v.0.1.0 - a minimalist command-line calculator
         ===================================================
         
         Enter values on the stack, or the name of an operation or command.

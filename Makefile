@@ -6,6 +6,9 @@ build:
 install: build
 	pip install dist/crpn-0.1.0.tar.gz
 
+uninstall:
+	pip uninstall crpn
+
 clean:
 	rm -r build
 
