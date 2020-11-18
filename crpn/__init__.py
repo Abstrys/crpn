@@ -14,9 +14,9 @@ from pathlib import Path
 SAVEFILE = '.crpn-state.json'
 
 ID_TEXT = """
-===================================================
-crpn v.0.0.1 - a minimalist command-line calculator
-===================================================
+==================================================
+crpn v0.1.0 - a minimalist command-line calculator
+==================================================
 """
 
 HELP_TEXT = """

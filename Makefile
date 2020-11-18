@@ -4,7 +4,7 @@ build:
 	python -m pep517.build .
 
 install: build
-	pip install dist/crpn-0.0.1.tar.gz
+	pip install dist/crpn-0.1.0.tar.gz
 
 clean:
 	rm -r build
