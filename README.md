@@ -11,33 +11,22 @@ This version is written in pure Python and should run just about anywhere. It ca
 in a pure terminal environment, and of course, will use the colors and fonts you have set in your
 terminal.
 
+1. [Installing it](#installing-it)
+1. [Using it](#using-it)
+1. [Other things to try](#other-things-to-try)
+1. [List of operations](#list-of-operations)
+1. [License](#license)
 
 ## Installing it
 
-Install from pypi:
+As a user, the easiest way is to install is from pypi:
 
     pip install crpn
 
-Install from source:
+Alternatively, to install from the [downloaded repo](https://github.com/Abstrys/crpn/archive/main.zip),
+use the included `Makefile`:
 
-1. [Download the source](https://github.com/Abstrys/crpn/archive/main.zip) and unarchive it:
-
-        cd ~/Downloads
-        unzip crpn-main.zip
-
-1. Go to the root of the directory just created:
-
-        cd crpn-main
-
-1. Make sure that you have `pep517` installed:
-
-        pip install pep517
-
-1. Then, run these commands to complete the installation:
-
-        cd crpn
-        python -m pep517.build .
-        pip install dist/crpn-0.0.1.tar.gz
+    make install
 
 
 ## Using it
