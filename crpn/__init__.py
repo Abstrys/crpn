@@ -10,6 +10,7 @@ import sys, os
 import math, random
 import json
 from pathlib import Path
+import decimal
 
 SAVEFILE = '.crpn-state.json'
 
@@ -36,9 +37,9 @@ for operation-specific help. For a list of the available operations, type:
 """
 
 CONST_MAP = {
-    "E": math.e,
-    "PI": math.pi,
-    "TAU": math.tau,
+    "E": decimal.Decimal(math.e),
+    "PI": decimal.Decimal(math.pi),
+    "TAU": decimal.Decimal(math.tau),
 }
 
 OP_METHOD_MAP = {
@@ -83,6 +84,7 @@ OP_METHOD_MAP = {
     "mult": "mult",
     "neg": "neg",
     "pow": "pow",
+    "q": "quit",
     "quit": "quit",
     "rad": "rad",
     "rand": "rand",
@@ -299,8 +301,9 @@ OP_HELP = {
     }
 }
 
-DISPLAY_MODES = ("STD", "FIX", "SCI", "ENG") 
-ANGLE_MODES = ("RAD", "DEG") 
+DISPLAY_MODES = ("std", "fix", "sci", "eng")
+BASE_MODES = ("bin", "oct", "dec", "hex")
+ANGLE_MODES = ("rad", "deg")
 
 class CRPN:
     """
@@ -308,7 +311,9 @@ class CRPN:
     """
     def __init__(self):
         self.stack = []
-        self.num_format = 'std'
+        self.display_mode = 'std'
+        self.base_mode = 'dec'
+        self.angle_mode = 'rad'
 
 
     def process_input(self, user_input):
@@ -329,24 +334,27 @@ class CRPN:
             cmd = user_input
             args = None
 
-        if cmd in OP_METHOD_MAP:
-            method = getattr(self, 'op_' + OP_METHOD_MAP[cmd])
-            method(args)
-            return
+        if cmd in DISPLAY_MODES:
+            self.display_mode = cmd
+        elif cmd in BASE_MODES:
+            self.base_mode = cmd
+        elif cmd in ANGLE_MODES:
+            self.angle_mode = cmd
         elif cmd in CONST_MAP:
             self.stack.append(CONST_MAP[cmd])
             return
+        elif cmd in OP_METHOD_MAP:
+            method = getattr(self, 'op_' + OP_METHOD_MAP[cmd])
+            method(args)
+            return
         else: # a value, perchance?
-            value = None
             try:
-                value = int(cmd)
-                self.stack.append(value)
-                return
+                self.stack.append(int(cmd))
             except ValueError:
-                pass
-
-            value = float(cmd)
-            self.stack.append(value)
+                try:
+                    self.stack.append(decimal.Decimal(cmd))
+                except:
+                    print("Unknown input: '%s'. Type 'help' for help." % cmd)
             return
 
 
@@ -380,17 +388,33 @@ class CRPN:
             with open(save_path, 'r') as savefile:
                 json_str = savefile.read()
             save_data = json.loads(json_str)
-            self.stack = save_data['stack']
-            self.num_format = save_data['num_format']
+            self.stack = []
+            for item in save_data['stack']:
+                value = None
+                try:
+                    self.stack.append(int(item))
+                except ValueError:
+                    self.stack.append(decimal.Decimal(item))
+            if 'display_mode' in save_data:
+                self.display_mode = save_data['display_mode']
+            if 'base_mode' in save_data:
+                self.base_mode = save_data['base_mode']
+            if 'angle_mode' in save_data:
+                self.angle_mode = save_data['angle_mode']
             return True
         return False
 
 
     def save_state(self):
         save_data = {
-            'stack': self.stack,
-            'num_format': self.num_format
+            'stack': [],
+            'display_mode': self.display_mode,
+            'base_mode': self.base_mode,
+            'angle_mode': self.angle_mode
             }
+        # convert all values to strings to preserve accuracy
+        for item in self.stack:
+            save_data['stack'].append(str(item))
         json_str = json.dumps(save_data)
         save_path = os.path.join(str(Path.home()), SAVEFILE)
         with open(save_path, 'w+') as savefile:
@@ -406,23 +430,23 @@ class CRPN:
         if type(val1) is int:
             self.stack.append(abs(val1))
         else:
-            self.stack.append(math.fabs(val1))
+            self.stack.append(decimal.fabs(val1))
 
     def op_acos(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(math.acos(val1))
+        self.stack.append(decimal.acos(val1))
 
     def op_asin(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(math.asin(val1))
+        self.stack.append(decimal.asin(val1))
 
 
     def op_atan(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(math.atan(val1))
+        self.stack.append(decimal.atan(val1))
 
 
     def op_add(self, args):
@@ -440,13 +464,13 @@ class CRPN:
     def op_cos(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(math.cos(val1))
+        self.stack.append(decimal.cos(val1))
 
 
     def op_cosh(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(math.cosh(val1))
+        self.stack.append(decimal.cosh(val1))
 
 
     def op_div(self, args):
@@ -459,10 +483,13 @@ class CRPN:
     def op_deg(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(math.degrees(val1))
+        self.stack.append(decimal.degrees(val1))
 
 
     def op_delete(self, args):
+        """
+        Delete up to X (default 1) stack elements.
+        """
         stack_level = 0
         if args != None:
             stack_level = int(args[0])
@@ -474,6 +501,9 @@ class CRPN:
 
 
     def op_dup(self, args):
+        """
+        Duplicate the first element on the stack.
+        """
         self.require_stack(1)
         self.stack.append(self.stack[-1])
 
@@ -483,7 +513,7 @@ class CRPN:
         if type(self.stack[-1]) is not int:
             raise ValueError("ERROR: The value in stack register 0 must be an integer!")
         val1 = self.stack.pop()
-        self.stack.append(math.factorial(val1))
+        self.stack.append(decimal.factorial(val1))
 
 
     def op_help(self, args):
@@ -524,11 +554,13 @@ class CRPN:
         val2 = self.stack.pop()
         self.stack.append(max([val1, val2]))
 
+
     def op_min(self, args):
         self.require_stack(2)
         val1 = self.stack.pop()
         val2 = self.stack.pop()
         self.stack.append(min([val1, val2]))
+
 
     def op_mult(self, args):
         self.require_stack(2)
@@ -536,10 +568,12 @@ class CRPN:
         val2 = self.stack.pop()
         self.stack.append(val1 * val2)
 
+
     def op_neg(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
         self.stack.append(-val1)
+
 
     def op_pow(self, args):
         self.require_stack(2)
@@ -548,12 +582,14 @@ class CRPN:
         if (type(val1) is int) and (type(val2) is int):
             self.stack.append(val2 ** val1)
         else:
-            self.stack.append(math.pow(val2, val1))
+            self.stack.append(decimal.pow(val2, val1))
+
 
     def op_quit(self, args):
         self.save_state()
         print("State saved. See you later!")
         sys.exit(0)
+
 
     def op_rad(self, args):
         """
@@ -561,7 +597,7 @@ class CRPN:
         """
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(math.radians(val1))
+        self.stack.append(decimal.radians(val1))
 
 
     def op_rand(self, args):
@@ -585,12 +621,14 @@ class CRPN:
     def op_sin(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(math.sin(val1))
+        self.stack.append(decimal.sin(val1))
+
 
     def op_sinh(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(math.sinh(val1))
+        self.stack.append(decimal.sinh(val1))
+
 
     def op_subt(self, args):
         self.require_stack(2)
@@ -632,17 +670,17 @@ class CRPN:
     def op_sqrt(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(math.sqrt(val1))
+        self.stack.append(decimal.sqrt(val1))
 
     def op_tan(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(math.tan(val1))
+        self.stack.append(decimal.tan(val1))
 
     def op_tanh(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(math.tanh(val1))
+        self.stack.append(decimal.tanh(val1))
 
 
 def main():
@@ -658,11 +696,14 @@ def main():
         # print the current stack
         stack_values = app.get_stack()
         stack_size = len(stack_values)
-        print("-" * 24)
+        stack_heading = "modes: | %s | %s | %s |" % (app.display_mode, app.angle_mode, app.base_mode)
+        print('-' * len(stack_heading))
+        print(stack_heading)
+        print('-' * len(stack_heading))
         for x in stack_values:
             stack_size -= 1
             print('%2s:   %s' % (stack_size, x))
-        print("-" * 24)
+        print('-' * len(stack_heading))
         sys.stdout.write('> ')
         user_input = input()
         try:

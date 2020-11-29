@@ -10,8 +10,8 @@ uninstall:
 	pip uninstall crpn
 
 clean:
-	rm -r build
+	-rm -r build
 
 spotless: clean
-	rm -r dist
-	rm -r crpn.egg-info
+	-rm -r dist
+	-rm -r crpn.egg-info
