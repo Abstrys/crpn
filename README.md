@@ -35,7 +35,7 @@ use the included `Makefile`:
    you the stack, which will initially be empty:
 
         ===================================================
-        crpn v.0.1.0 - a minimalist command-line calculator
+        crpn v.0.2.0 - a minimalist command-line calculator
         ===================================================
         
         Enter values on the stack, or the name of an operation or command.

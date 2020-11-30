@@ -16,7 +16,7 @@ SAVEFILE = '.crpn-state.json'
 
 ID_TEXT = """
 ==================================================
-crpn v0.1.0 - a minimalist command-line calculator
+crpn v0.2.0 - a minimalist command-line calculator
 ==================================================
 """
 
