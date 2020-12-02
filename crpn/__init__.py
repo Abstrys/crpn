@@ -349,12 +349,9 @@ class CRPN:
             return
         else: # a value, perchance?
             try:
-                self.stack.append(int(cmd))
-            except ValueError:
-                try:
-                    self.stack.append(decimal.Decimal(cmd))
-                except:
-                    print("Unknown input: '%s'. Type 'help' for help." % cmd)
+                self.stack.append(decimal.Decimal(cmd))
+            except:
+                print("Unknown input: '%s'. Type 'help' for help." % cmd)
             return
 
 
@@ -391,10 +388,7 @@ class CRPN:
             self.stack = []
             for item in save_data['stack']:
                 value = None
-                try:
-                    self.stack.append(int(item))
-                except ValueError:
-                    self.stack.append(decimal.Decimal(item))
+                self.stack.append(decimal.Decimal(item))
             if 'display_mode' in save_data:
                 self.display_mode = save_data['display_mode']
             if 'base_mode' in save_data:
@@ -427,15 +421,14 @@ class CRPN:
     def op_abs(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        if type(val1) is int:
-            self.stack.append(abs(val1))
-        else:
-            self.stack.append(decimal.fabs(val1))
+        self.stack.append(val1.copy_abs())
+
 
     def op_acos(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
         self.stack.append(decimal.acos(val1))
+
 
     def op_asin(self, args):
         self.require_stack(1)
@@ -572,17 +565,14 @@ class CRPN:
     def op_neg(self, args):
         self.require_stack(1)
         val1 = self.stack.pop()
-        self.stack.append(-val1)
+        self.stack.append(val1.copy_negate())
 
 
     def op_pow(self, args):
         self.require_stack(2)
         val1 = self.stack.pop()
         val2 = self.stack.pop()
-        if (type(val1) is int) and (type(val2) is int):
-            self.stack.append(val2 ** val1)
-        else:
-            self.stack.append(decimal.pow(val2, val1))
+        self.stack.append(decimal.pow(val2, val1))
 
 
     def op_quit(self, args):
@@ -692,6 +682,7 @@ def main():
         sys.stdout.write("Restored previously saved state. ")
 
     print("Current stack:")
+    ctx = decimal.getcontext()
     while(True):
         # print the current stack
         stack_values = app.get_stack()
@@ -702,7 +693,12 @@ def main():
         print('-' * len(stack_heading))
         for x in stack_values:
             stack_size -= 1
-            print('%2s:   %s' % (stack_size, x))
+            val = str(x)
+            if app.display_mode == 'sci':
+                val = ctx.to_sci_string(x.normalize())
+            elif app.display_mode == 'eng':
+                val = ctx.to_eng_string(x.normalize())
+            print('%2s:   %s' % (stack_size, val))
         print('-' * len(stack_heading))
         sys.stdout.write('> ')
         user_input = input()
