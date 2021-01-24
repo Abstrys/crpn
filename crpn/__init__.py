@@ -376,6 +376,16 @@ class CRPN:
 
     def get_stack(self):
         return self.stack
+        stack_values = []
+        for x in self.stack:
+            if app.display_mode == 'sci':
+                val = ctx.to_sci_string(x.normalize())
+            elif app.display_mode == 'eng':
+                val = ctx.to_eng_string(x.normalize())
+            else:
+                val = str(x)
+            stack_values.append(val)
+        return stack_values
 
 
     def load_state(self):
@@ -684,24 +694,26 @@ def main():
     print("Current stack:")
     ctx = decimal.getcontext()
     while(True):
-        # print the current stack
-        stack_values = app.get_stack()
-        stack_size = len(stack_values)
+        # print the stack heading.
         stack_heading = "modes: | %s | %s | %s |" % (app.display_mode, app.angle_mode, app.base_mode)
         print('-' * len(stack_heading))
         print(stack_heading)
         print('-' * len(stack_heading))
+
+        # print the current stack
+        stack_values = app.get_stack()
+        stack_size = len(stack_values)
         for x in stack_values:
             stack_size -= 1
-            val = str(x)
-            if app.display_mode == 'sci':
-                val = ctx.to_sci_string(x.normalize())
-            elif app.display_mode == 'eng':
-                val = ctx.to_eng_string(x.normalize())
-            print('%2s:   %s' % (stack_size, val))
+            print('%2s:   %s' % (stack_size, x))
+        # print an underline the same length as the heading.
         print('-' * len(stack_heading))
+
+        # get user input.
         sys.stdout.write('> ')
         user_input = input()
+
+        # process it!
         try:
             app.process_input(user_input)
         except ValueError as e:
